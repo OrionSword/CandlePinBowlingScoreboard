@@ -33,6 +33,9 @@
 
 * { box-sizing: border-box; }
 
+/* Stop iOS double-tap zoom when entering balls quickly. */
+button, .btn, .chip, .tab, label { touch-action: manipulation; }
+
 html, body { margin: 0; }
 
 body {
@@ -40,6 +43,7 @@ body {
   color: var(--text);
   font: 16px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
   padding-bottom: env(safe-area-inset-bottom);
 }
 
@@ -159,7 +163,7 @@ h2 { font-size: 1.1rem; margin: 8px 0 12px; }
 /* Input */
 .input-panel {
   position: sticky;
-  bottom: 0;
+  bottom: env(safe-area-inset-bottom); /* stay above the iPhone home indicator */
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);

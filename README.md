@@ -35,12 +35,26 @@ home screen from Chrome. It works offline once installed.
 4. After a minute the site is live at
    `https://<your-username>.github.io/CandlePinBowlingScoreboard/`.
 
-## Install on your phone (Android + Chrome)
+## Install on Android (Chrome)
 
 1. Open the GitHub Pages link in Chrome.
 2. Tap the **⋮** menu → **Add to Home screen** → **Install**.
 3. Launch it from the home screen icon. It opens full screen and works without
    a signal at the lanes.
+
+## Install on iPhone / iPad
+
+1. Open the GitHub Pages link in Safari (on iOS 16.4+ Chrome works too via its
+   share button).
+2. Tap the **Share** button → **Add to Home Screen** → make sure **Open as Web
+   App** is on (newer iOS versions) → **Add**.
+3. Launch it from the home screen icon.
+
+On iOS the home screen app and the Safari tab keep **separate** saved games and
+history. Use the home screen app at the lanes. Safari can also erase a site's
+saved data after about 7 days without a visit; the home screen app is exempt
+from that. **Export backup** opens the share sheet so you can save the file to
+Files or AirDrop it, and **Import backup** reads it back in.
 
 Your scores are stored in the browser's local storage for that site. Clearing
 Chrome's site data for the page will erase them, so use **Export backup** on
