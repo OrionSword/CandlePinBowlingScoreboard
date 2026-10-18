@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Candlepin Scoreboard</title>
+  <meta name="description" content="Score tracker for candlepin bowling. Works offline.">
+  <meta name="theme-color" content="#14213d">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>Candlepin</h1>
+    <nav class="tabs" role="tablist">
+      <button class="tab" role="tab" data-view="game" aria-selected="true">Game</button>
+      <button class="tab" role="tab" data-view="history" aria-selected="false">History</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- New game setup -->
+    <section id="view-setup" class="view" hidden>
+      <h2>New game</h2>
+      <p class="muted">Add a name for each bowler. They take turns frame by frame.</p>
+      <ol id="player-list" class="player-list"></ol>
+      <div class="row">
+        <button id="add-player" class="btn secondary">+ Add bowler</button>
+      </div>
+      <button id="start-game" class="btn primary big">Start game</button>
+    </section>
+
+    <!-- Active game -->
+    <section id="view-game" class="view" hidden>
+      <div id="scorecards"></div>
+
+      <div id="input-panel" class="input-panel">
+        <div class="turn">
+          <div>
+            <div id="turn-player" class="turn-player"></div>
+            <div id="turn-detail" class="muted small"></div>
+          </div>
+          <div class="standing">
+            <span id="standing-count">10</span>
+            <span class="muted small">standing</span>
+          </div>
+        </div>
+        <p class="muted small prompt">Pins knocked down on this ball:</p>
+        <div id="pin-pad" class="pin-pad"></div>
+        <div class="row actions">
+          <button id="btn-foul" class="btn secondary">Foul</button>
+          <button id="btn-undo" class="btn secondary">Undo</button>
+        </div>
+      </div>
+
+      <div id="game-over" class="game-over" hidden>
+        <h2>Game over</h2>
+        <div id="summary"></div>
+        <div class="row">
+          <button id="btn-rematch" class="btn primary">Play again</button>
+          <button id="btn-undo-final" class="btn secondary">Undo last ball</button>
+        </div>
+        <button id="btn-new-players" class="btn link">New game with different bowlers</button>
+      </div>
+
+      <button id="btn-abandon" class="btn link danger">Abandon this game</button>
+    </section>
+
+    <!-- History -->
+    <section id="view-history" class="view" hidden>
+      <h2>Bowler stats</h2>
+      <div id="player-stats"></div>
+      <h2>Past games</h2>
+      <div id="history-list"></div>
+      <div class="row backup">
+        <button id="btn-export" class="btn secondary">Export backup</button>
+        <label class="btn secondary">
+          Import backup
+          <input id="import-file" type="file" accept="application/json,.json" hidden>
+        </label>
+      </div>
+      <button id="btn-clear-history" class="btn link danger">Delete all history</button>
+    </section>
+  </main>
+
+  <script src="scoring.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
