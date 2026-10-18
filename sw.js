@@ -1,6 +1,6 @@
 // Offline support. Network first so updates show up right away when online,
 // falling back to the cached copy at the lanes with no signal.
-var CACHE = 'candlepin-v1';
+var CACHE = 'candlepin-v2';
 var ASSETS = [
   './',
   'index.html',

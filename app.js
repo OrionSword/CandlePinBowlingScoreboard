@@ -5,7 +5,8 @@
   var KEYS = {
     current: 'candlepin.current.v1',
     history: 'candlepin.history.v1',
-    names: 'candlepin.names.v1'
+    names: 'candlepin.names.v1',
+    fences: 'candlepin.fences.v1'
   };
   var MAX_PLAYERS = 8;
 
@@ -36,6 +37,8 @@
     game: load(KEYS.current, null),
     history: load(KEYS.history, []),
     names: load(KEYS.names, ['']),
+    fences: load(KEYS.fences, false),
+    historyFilter: 'all', // 'all' | 'fences' | 'nofences'
     view: 'game'
   };
 
@@ -48,11 +51,12 @@
     return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
   }
 
-  function startGame(names) {
+  function startGame(names, fences) {
     state.game = {
       id: newId(),
       startedAt: new Date().toISOString(),
       finishedAt: null,
+      fences: !!fences,
       players: names.map(function (n) { return { name: n, balls: [] }; }),
       log: [] // player index for each ball thrown, used for undo
     };
@@ -241,11 +245,15 @@
       list.appendChild(el('li', null, [input, state.names.length > 1 ? remove : null]));
     });
     $('add-player').disabled = state.names.length >= MAX_PLAYERS;
+    $('setup-fences').checked = !!state.fences;
   }
 
   function renderGame() {
     var game = state.game;
     var turn = currentTurn(game);
+    var fences = $('game-fences');
+    fences.setAttribute('aria-pressed', String(!!game.fences));
+    fences.textContent = game.fences ? 'Fences: on' : 'Fences: off';
     var cards = $('scorecards');
     cards.innerHTML = '';
     game.players.forEach(function (p, i) {
@@ -305,10 +313,14 @@
   function renderHistory() {
     var list = $('history-list');
     list.innerHTML = '';
-    if (!state.history.length) {
-      list.appendChild(el('div', { className: 'empty', text: 'Finished games will appear here.' }));
+    document.querySelectorAll('.filter').forEach(function (b) {
+      b.setAttribute('aria-pressed', String(b.dataset.filter === state.historyFilter));
+    });
+    var games = filteredHistory();
+    if (!games.length) {
+      list.appendChild(el('div', { className: 'empty', text: state.history.length ? 'No games match this filter.' : 'Finished games will appear here.' }));
     }
-    state.history.forEach(function (game) {
+    games.forEach(function (game) {
       var scores = game.players.map(function (p, i) {
         return playerLabel(p, i) + ' ' + C.totalScore(p.balls);
       }).join(' · ');
@@ -317,7 +329,10 @@
         el('summary', null, [
           el('div', null, [
             el('div', { className: 'scores', text: scores }),
-            el('div', { className: 'date', text: formatDate(game.finishedAt || game.startedAt) })
+            el('div', { className: 'date' }, [
+              formatDate(game.finishedAt || game.startedAt),
+              game.fences ? el('span', { className: 'tag', text: 'Fences' }) : null
+            ])
           ]),
           el('div', { className: 'muted', text: '▾' })
         ]),
@@ -344,9 +359,15 @@
     renderPlayerStats();
   }
 
+  function filteredHistory() {
+    if (state.historyFilter === 'all') return state.history;
+    var want = state.historyFilter === 'fences';
+    return state.history.filter(function (g) { return !!g.fences === want; });
+  }
+
   function renderPlayerStats() {
     var byName = {};
-    state.history.forEach(function (game) {
+    filteredHistory().forEach(function (game) {
       game.players.forEach(function (p, i) {
         var name = playerLabel(p, i);
         var key = name.trim().toLowerCase();
@@ -421,8 +442,32 @@
   });
 
   $('start-game').addEventListener('click', function () {
-    startGame(state.names.map(function (n) { return n.trim(); }));
+    startGame(state.names.map(function (n) { return n.trim(); }), state.fences);
     render();
+  });
+
+  $('setup-fences').addEventListener('change', function (e) {
+    state.fences = e.target.checked;
+    save(KEYS.fences, state.fences);
+  });
+
+  // Fix the fences setting mid-game (or after it ends) if it was set wrong.
+  $('game-fences').addEventListener('click', function () {
+    var game = state.game;
+    game.fences = !game.fences;
+    state.fences = game.fences;
+    save(KEYS.fences, state.fences);
+    state.history.forEach(function (g) { if (g.id === game.id) g.fences = game.fences; });
+    persistHistory();
+    persistGame();
+    renderGame();
+  });
+
+  document.querySelectorAll('.filter').forEach(function (b) {
+    b.addEventListener('click', function () {
+      state.historyFilter = b.dataset.filter;
+      renderHistory();
+    });
   });
 
   $('btn-foul').addEventListener('click', function () { throwBall(0, true); });
@@ -430,7 +475,7 @@
   $('btn-undo-final').addEventListener('click', undo);
 
   $('btn-rematch').addEventListener('click', function () {
-    startGame(state.game.players.map(function (p) { return p.name; }));
+    startGame(state.game.players.map(function (p) { return p.name; }), state.game.fences);
     render();
     window.scrollTo(0, 0);
   });

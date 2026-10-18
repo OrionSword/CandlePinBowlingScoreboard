@@ -29,11 +29,18 @@
       <div class="row">
         <button id="add-player" class="btn secondary">+ Add bowler</button>
       </div>
+      <label class="switch">
+        <input id="setup-fences" type="checkbox">
+        <span>Fences (bumpers) up on the lane</span>
+      </label>
       <button id="start-game" class="btn primary big">Start game</button>
     </section>
 
     <!-- Active game -->
     <section id="view-game" class="view" hidden>
+      <div class="game-bar">
+        <button id="game-fences" class="chip" aria-pressed="false">Fences: off</button>
+      </div>
       <div id="scorecards"></div>
 
       <div id="input-panel" class="input-panel">
@@ -70,6 +77,11 @@
 
     <!-- History -->
     <section id="view-history" class="view" hidden>
+      <div class="filters" role="group" aria-label="Filter games">
+        <button class="chip filter" data-filter="all" aria-pressed="true">All games</button>
+        <button class="chip filter" data-filter="nofences" aria-pressed="false">No fences</button>
+        <button class="chip filter" data-filter="fences" aria-pressed="false">Fences</button>
+      </div>
       <h2>Bowler stats</h2>
       <div id="player-stats"></div>
       <h2>Past games</h2>
