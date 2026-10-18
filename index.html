@@ -9,7 +9,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon-192.png" type="image/png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=3">
 </head>
 <body>
   <header class="topbar">
@@ -54,6 +54,10 @@
             <span class="muted small">standing</span>
           </div>
         </div>
+        <div class="modes" role="group" aria-label="Input mode">
+          <button class="chip mode" data-mode="knocked" aria-pressed="true">Knocked down</button>
+          <button class="chip mode" data-mode="left" aria-pressed="false">Left standing</button>
+        </div>
         <p class="muted small prompt">Pins knocked down on this ball:</p>
         <div id="pin-pad" class="pin-pad"></div>
         <div class="row actions">
@@ -97,7 +101,7 @@
     </section>
   </main>
 
-  <script src="scoring.js"></script>
-  <script src="app.js"></script>
+  <script src="scoring.js?v=3"></script>
+  <script src="app.js?v=3"></script>
 </body>
 </html>

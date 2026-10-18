@@ -6,7 +6,8 @@
     current: 'candlepin.current.v1',
     history: 'candlepin.history.v1',
     names: 'candlepin.names.v1',
-    fences: 'candlepin.fences.v1'
+    fences: 'candlepin.fences.v1',
+    inputMode: 'candlepin.inputMode.v1'
   };
   var MAX_PLAYERS = 8;
 
@@ -38,6 +39,8 @@
     history: load(KEYS.history, []),
     names: load(KEYS.names, ['']),
     fences: load(KEYS.fences, false),
+    // 'knocked': enter pins knocked down. 'left': enter pins left standing after the ball.
+    inputMode: load(KEYS.inputMode, 'knocked') === 'left' ? 'left' : 'knocked',
     historyFilter: 'all', // 'all' | 'fences' | 'nofences'
     view: 'game'
   };
@@ -274,20 +277,31 @@
       $('turn-detail').textContent = detail;
       $('standing-count').textContent = String(standing);
 
+      var leftMode = state.inputMode === 'left';
+      document.querySelectorAll('.mode').forEach(function (b) {
+        b.setAttribute('aria-pressed', String(b.dataset.mode === state.inputMode));
+      });
+      var prompt = document.querySelector('.input-panel .prompt');
+      if (prompt) prompt.textContent = leftMode ? 'Pins left standing after this ball:' : 'Pins knocked down on this ball:';
+
+      // Either way the ball is stored as pins knocked down, so the mode never changes scoring.
       var pad = $('pin-pad');
       pad.innerHTML = '';
-      for (var n = 0; n < 10; n++) {
+      var first = leftMode ? 1 : 0;
+      for (var n = first; n < first + 10; n++) {
         (function (n) {
-          var btn = el('button', { className: 'btn', text: String(n), onclick: function () { throwBall(n); } });
-          btn.disabled = n > standing;
+          var knocked = leftMode ? standing - n : n;
+          var btn = el('button', { className: 'btn', text: String(n), onclick: function () { throwBall(knocked); } });
+          btn.disabled = knocked < 0 || knocked > standing;
           pad.appendChild(btn);
         })(n);
       }
       var allLabel;
       var rackBall = rackBallIndex(player.balls, turn.next);
-      if (rackBall === 0) allLabel = 'Strike (10)';
-      else if (rackBall === 1) allLabel = 'Spare (' + standing + ')';
-      else allLabel = 'All ' + standing;
+      if (rackBall === 0) allLabel = 'Strike';
+      else if (rackBall === 1) allLabel = 'Spare';
+      else allLabel = 'All down';
+      allLabel = leftMode ? '0 \u00b7 ' + allLabel : allLabel + ' (' + standing + ')';
       pad.appendChild(el('button', { className: 'btn all', text: allLabel, onclick: function () { throwBall(standing); } }));
       $('btn-undo').disabled = !game.log.length;
     } else {
@@ -467,6 +481,14 @@
     b.addEventListener('click', function () {
       state.historyFilter = b.dataset.filter;
       renderHistory();
+    });
+  });
+
+  document.querySelectorAll('.mode').forEach(function (b) {
+    b.addEventListener('click', function () {
+      state.inputMode = b.dataset.mode;
+      save(KEYS.inputMode, state.inputMode);
+      renderGame();
     });
   });
 

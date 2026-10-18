@@ -1,12 +1,12 @@
 // Offline support. Network first so updates show up right away when online,
 // falling back to the cached copy at the lanes with no signal.
-var CACHE = 'candlepin-v2';
+var CACHE = 'candlepin-v3';
 var ASSETS = [
   './',
   'index.html',
-  'styles.css',
-  'scoring.js',
-  'app.js',
+  'styles.css?v=3',
+  'scoring.js?v=3',
+  'app.js?v=3',
   'manifest.webmanifest',
   'icons/icon-192.png',
   'icons/icon-512.png',
@@ -14,7 +14,9 @@ var ASSETS = [
 ];
 
 self.addEventListener('install', function (event) {
-  event.waitUntil(caches.open(CACHE).then(function (cache) { return cache.addAll(ASSETS); }));
+  event.waitUntil(caches.open(CACHE).then(function (cache) {
+    return cache.addAll(ASSETS.map(function (url) { return new Request(url, { cache: 'reload' }); }));
+  }));
   self.skipWaiting();
 });
 
@@ -30,7 +32,8 @@ self.addEventListener('fetch', function (event) {
   var req = event.request;
   if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
   event.respondWith(
-    fetch(req).then(function (res) {
+    // no-cache: revalidate with the server so a new page never runs a stale cached script.
+    fetch(req.mode === 'navigate' ? req.url : req, { cache: 'no-cache' }).then(function (res) {
       if (res.ok) {
         var copy = res.clone();
         caches.open(CACHE).then(function (cache) { cache.put(req, copy); });
