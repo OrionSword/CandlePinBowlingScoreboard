@@ -22,6 +22,8 @@ home screen from Chrome. It works offline once installed.
   (games, average, high game, throws per game).
 - Record whether fences (bumpers) were up for each game, and filter history
   and bowler stats by fences / no fences.
+- Enter each ball as pins knocked down, or switch to counting the pins left
+  standing (no subtracting in your head).
 - Export / import a JSON backup of your history.
 
 ## Publish with GitHub Pages
@@ -54,5 +56,6 @@ with:
 node --test tests/scoring.test.js
 ```
 
-When you change app files, bump `CACHE` in `sw.js` so installed copies pick up
-the new version.
+When you change app files, bump `CACHE` in `sw.js` and the `?v=` number on the
+file links in `index.html` and `sw.js`, so installed copies pick up the new
+version.
