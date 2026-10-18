@@ -9,7 +9,12 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon-192.png" type="image/png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="styles.css?v=3">
+  <!-- iOS home screen app: full screen, dark header behind the status bar, short name -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Candlepin">
+  <link rel="stylesheet" href="styles.css?v=4">
 </head>
 <body>
   <header class="topbar">
@@ -101,7 +106,7 @@
     </section>
   </main>
 
-  <script src="scoring.js?v=3"></script>
-  <script src="app.js?v=3"></script>
+  <script src="scoring.js?v=4"></script>
+  <script src="app.js?v=4"></script>
 </body>
 </html>

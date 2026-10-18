@@ -517,8 +517,20 @@
 
   $('btn-export').addEventListener('click', function () {
     var data = JSON.stringify({ app: 'candlepin-scoreboard', version: 1, history: state.history }, null, 2);
+    var name = 'candlepin-history-' + new Date().toISOString().slice(0, 10) + '.json';
+    // On iOS a download link in the home screen app can strand you on a page with no
+    // way back, so hand the file to the share sheet (Save to Files, AirDrop, ...).
+    var isIOS = /iP(hone|ad|od)/.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    if (isIOS && navigator.canShare && typeof File === 'function') {
+      var file = new File([data], name, { type: 'application/json' });
+      if (navigator.canShare({ files: [file] })) {
+        navigator.share({ files: [file], title: 'Candlepin history' }).catch(function () {});
+        return;
+      }
+    }
     var url = URL.createObjectURL(new Blob([data], { type: 'application/json' }));
-    var a = el('a', { href: url, download: 'candlepin-history-' + new Date().toISOString().slice(0, 10) + '.json' });
+    var a = el('a', { href: url, download: name });
     document.body.appendChild(a);
     a.click();
     a.remove();
