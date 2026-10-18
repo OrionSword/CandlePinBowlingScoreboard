@@ -20,6 +20,8 @@ home screen from Chrome. It works offline once installed.
   closed tab or closed browser doesn't lose it.
 - History of finished games with full scorecards, plus per-bowler stats
   (games, average, high game, throws per game).
+- Record whether fences (bumpers) were up for each game, and filter history
+  and bowler stats by fences / no fences.
 - Export / import a JSON backup of your history.
 
 ## Publish with GitHub Pages
